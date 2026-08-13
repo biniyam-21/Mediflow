@@ -1,27 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { MediFlow } from "../assets";
 import { useNavigate } from "react-router-dom";
-import { IconLogout, IconUser } from "@tabler/icons-react";
+import { IconUser, IconShoppingCart } from "@tabler/icons-react";
+import { getSession } from "../services/authService";
+import { useCart } from "../context/CartContext";
+import { NavProfileDropdown } from "./NavProfileDropdown";
 
 const NavbarOne: React.FC = () => {
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [session, setSession] = useState(getSession());
+  const { itemCount, openCart } = useCart();
 
   useEffect(() => {
-    setIsLoggedIn(localStorage.getItem("userLoggedIn") === "true");
+    setSession(getSession());
   }, []);
-
-  const handleAuthAction = () => {
-    if (isLoggedIn) {
-      localStorage.removeItem("userLoggedIn");
-      localStorage.removeItem("userEmail");
-      localStorage.removeItem("userRole");
-      setIsLoggedIn(false);
-      navigate("/login");
-    } else {
-      navigate("/login");
-    }
-  };
 
   return (
     <header className="w-full flex justify-center items-center flex-col">
@@ -47,37 +39,66 @@ const NavbarOne: React.FC = () => {
             className="text-sm font-medium text-gray-700 hover:text-black transition-colors"
             onClick={() => navigate("/product")}
           >
-            All
+            All Medicines
           </button>
 
+          {/* Cart Icon in Navbar */}
           <button
             type="button"
-            className="text-sm font-medium text-gray-700 hover:text-black transition-colors flex items-center gap-1"
-            onClick={handleAuthAction}
+            onClick={openCart}
+            style={{
+              position: "relative",
+              background: "#f0fdf4",
+              border: "1px solid #bbf7d0",
+              borderRadius: "50%",
+              width: 36,
+              height: 36,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              transition: "transform 0.15s ease",
+            }}
+            title="Open Quick Cart"
           >
-            {isLoggedIn ? (
-              <>
-                <IconLogout size={16} /> Logout
-              </>
-            ) : (
-              <>
-                <IconUser size={16} /> Login
-              </>
+            <IconShoppingCart size={18} color="#15803d" />
+            {itemCount > 0 && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: -4,
+                  right: -4,
+                  background: "#16a34a",
+                  color: "white",
+                  fontSize: "0.68rem",
+                  fontWeight: 800,
+                  borderRadius: "50%",
+                  width: 18,
+                  height: 18,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  border: "2px solid white",
+                }}
+              >
+                {itemCount}
+              </span>
             )}
           </button>
 
-          <button
-            type="button"
-            onClick={() =>
-              window.open(
-                "https://github.com/Team-clear/pharmacySupplyChainManagementSystem",
-                "_blank"
-              )
-            }
-            className="black_btn"
-          >
-            GitHub
-          </button>
+          {/* User Logged-in State: Shadcn Nav Profile Dropdown */}
+          {session.isLoggedIn ? (
+            <NavProfileDropdown />
+          ) : (
+            <button
+              type="button"
+              className="btn-primary"
+              style={{ padding: "7px 16px", fontSize: "0.82rem", display: "flex", alignItems: "center", gap: 5 }}
+              onClick={() => navigate("/login")}
+            >
+              <IconUser size={16} /> Login
+            </button>
+          )}
         </div>
       </nav>
     </header>

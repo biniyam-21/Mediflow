@@ -1,12 +1,12 @@
 import { VendorOffer } from '../types';
 
 export const MOCK_OFFERS: VendorOffer[] = [
-  { id: 1, position: 6, mass: 230000, symbol: 'Temeke', name: 'Marvelous Medicines Arusha', status: 'pending' },
-  { id: 2, position: 7, mass: 120000, symbol: 'Natron', name: 'Panacea Prescriptions', status: 'pending' },
-  { id: 3, position: 39, mass: 6070000, symbol: 'Yombo dovya', name: 'Hale & Health Pharmacy', status: 'pending' },
-  { id: 4, position: 56, mass: 5870000, symbol: 'Tabata', name: 'Ailments & Antidotes', status: 'pending' },
-  { id: 5, position: 58, mass: 3270000, symbol: 'Central', name: 'QuickUp Prescriptions', status: 'pending' },
-  { id: 6, position: 12, mass: 450000, symbol: 'Kinondoni', name: 'CarePlus Pharma', status: 'pending' },
-  { id: 7, position: 18, mass: 890000, symbol: 'Ilala', name: 'Capital Health Supplies', status: 'pending' },
-  { id: 8, position: 24, mass: 1250000, symbol: 'Mbezi', name: 'Island Care Pharmacy', status: 'pending' },
+  { id: 1, position: 200, mass: 44500, symbol: 'Addis Ababa', name: 'PFSA Central Medical Store', status: 'pending' },
+  { id: 2, position: 150, mass: 84000, symbol: 'Hawassa', name: 'Hawassa University Referral Pharmacy', status: 'pending' },
+  { id: 3, position: 80, mass: 36000, symbol: 'Bahir Dar', name: 'Felege Hiwot Referral Pharmacy', status: 'pending' },
+  { id: 4, position: 300, mass: 144500, symbol: 'Mekelle', name: 'Ayder Referral Pharmacy', status: 'pending' },
+  { id: 5, position: 100, mass: 62400, symbol: 'Jimma', name: 'Jimma University Med Center', status: 'pending' },
+  { id: 6, position: 50, mass: 28000, symbol: 'Gondar', name: 'University of Gondar Hospital', status: 'pending' },
+  { id: 7, position: 180, mass: 84600, symbol: 'Dire Dawa', name: 'Dil Chora Referral Pharmacy', status: 'pending' },
+  { id: 8, position: 60, mass: 21000, symbol: 'Adama', name: 'Adama General Hospital Pharmacy', status: 'pending' },
 ];

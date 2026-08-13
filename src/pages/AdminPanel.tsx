@@ -1,199 +1,209 @@
-import React, { useState, useContext, FormEvent } from "react";
-import Sidebar from "../components/Sidebar";
-import NavbarOne from "../components/NavbarOne";
-import Header from "../components/Header";
-import { Card, Grid, Button, Table, Badge } from "@mantine/core";
-import { TextField, Box } from "@mui/material";
+import React, { useState, FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
+import DashboardLayout from "../components/DashboardLayout";
+import StatCard from "../components/StatCard";
+import { DataTable, Column, DropdownFilter } from "../components/DataTable";
+import {
+  IconUsers,
+  IconBuildingStore,
+  IconPill,
+  IconChartBar,
+  IconAlertTriangle,
+  IconChevronRight,
+  IconPlus,
+  IconTrash,
+} from "@tabler/icons-react";
 import { getAllMedicines, addMedicine, deleteMedicine } from "../services/medicineService";
 import { Medicine } from "../types";
-import medContext from "../components/context";
+import { MOCK_USERS } from "../data/mockUsers";
+import { MOCK_ORDERS } from "../data/mockOrders";
 
 const AdminPanel: React.FC = () => {
+  const navigate = useNavigate();
   const [medicines, setMedicines] = useState<Medicine[]>(getAllMedicines());
-  const context = useContext(medContext);
-  const setSearched = context ? context[1] : undefined;
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [form, setForm] = useState({
+    title: "", price: "", city: "", pharmacyName: "", unit: "", description: "", category: ""
+  });
 
-  // Form fields
-  const [title, setTitle] = useState("");
-  const [city, setCity] = useState("");
-  const [pharmacyName, setPharmacyName] = useState("");
-  const [price, setPrice] = useState("");
-  const [unit, setUnit] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-  const [description, setDescription] = useState("");
+  const totalUsers = MOCK_USERS.length;
+  const pendingUsers = MOCK_USERS.filter((u) => u.status === "pending").length;
+  const totalRevenue = MOCK_ORDERS.filter((o) => o.status === "delivered").reduce((s, o) => s + o.totalAmount, 0);
 
-  const handleAddMedicine = (e: FormEvent) => {
+  const handleAdd = (e: FormEvent) => {
     e.preventDefault();
-    if (!title || !price) return;
-
-    const added = addMedicine({
-      Title: title,
-      City: city || "Dar es Salaam",
-      PharmacyName: pharmacyName || "Central Medical Depot",
-      Price: price.includes("Tsh") ? price : `${price} Tsh`,
-      Unit: unit || "10 Tablets in Strip",
-      ImageUrl: imageUrl || "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500&auto=format&fit=crop&q=60",
-      Description: description || "Pharmaceutical supply item registered via admin portal.",
-      Uses: "Bacterial or general relief treatment.",
+    addMedicine({
+      Title: form.title,
+      City: form.city || "Addis Ababa",
+      PharmacyName: form.pharmacyName || "MediFlow Store",
+      Price: `${form.price} ETB`,
+      Unit: form.unit,
+      ImageUrl: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500&auto=format&fit=crop&q=60",
+      Description: form.description || "Medicine listed via admin portal.",
+      Uses: "As prescribed.",
       InStock: true,
+      Category: form.category,
     });
-
-    const updated = getAllMedicines();
-    setMedicines([...updated]);
-    if (setSearched) {
-      setSearched([...updated]);
-    }
-
-    // Clear form
-    setTitle("");
-    setCity("");
-    setPharmacyName("");
-    setPrice("");
-    setUnit("");
-    setImageUrl("");
-    setDescription("");
+    setMedicines([...getAllMedicines()]);
+    setForm({ title: "", price: "", city: "", pharmacyName: "", unit: "", description: "", category: "" });
+    setShowAddForm(false);
   };
 
   const handleDelete = (id: string) => {
-    const updated = deleteMedicine(id);
-    setMedicines([...updated]);
-    if (setSearched) {
-      setSearched([...updated]);
-    }
+    setMedicines(deleteMedicine(id));
   };
 
+  const columns: Column<Medicine>[] = [
+    {
+      header: "Medicine",
+      accessor: (med) => (
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <img src={med.ImageUrl} alt={med.Title} style={{ width: 32, height: 32, borderRadius: 6, objectFit: "cover" }}
+            onError={(e) => { (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=60"; }} />
+          <div style={{ fontWeight: 600, fontSize: "0.84rem" }}>{med.Title}</div>
+        </div>
+      ),
+    },
+    {
+      header: "Category",
+      accessor: (med) => <span className="badge badge-gray" style={{ fontSize: "0.68rem" }}>{med.Category || "General"}</span>,
+    },
+    {
+      header: "Vendor / City",
+      accessor: (med) => <span style={{ fontSize: "0.82rem", color: "var(--text-secondary)" }}>{med.PharmacyName || med.City}</span>,
+    },
+    {
+      header: "Price (ETB)",
+      accessor: (med) => <span style={{ fontWeight: 700 }}>{med.Price}</span>,
+    },
+    {
+      header: "Stock Status",
+      accessor: (med) => (
+        <span className="badge" style={{ background: med.InStock ? "#dcfce7" : "#fee2e2", color: med.InStock ? "#15803d" : "#b91c1c" }}>
+          {med.InStock ? "In Stock" : "Out of Stock"}
+        </span>
+      ),
+    },
+    {
+      header: "Action",
+      accessor: (med) => (
+        <button className="btn-danger" style={{ padding: "5px 10px" }} onClick={() => handleDelete(med._id)}>
+          <IconTrash size={13} /> Remove
+        </button>
+      ),
+    },
+  ];
+
+  const categories = Array.from(new Set(medicines.map((m) => m.Category || "General")));
+
+  const filters: DropdownFilter<Medicine>[] = [
+    {
+      key: "category",
+      label: "Category",
+      options: categories.map((c) => ({ label: c, value: c })),
+      filterFn: (med, val) => (med.Category || "General") === val,
+    },
+    {
+      key: "stock",
+      label: "Stock",
+      options: [
+        { label: "In Stock", value: "instock" },
+        { label: "Out of Stock", value: "outofstock" },
+      ],
+      filterFn: (med, val) => (val === "instock" ? !!med.InStock : !med.InStock),
+    },
+  ];
+
   return (
-    <div>
-      <div className="main">
-        <div className="gradient" />
+    <DashboardLayout title="Admin Dashboard" subtitle="System-wide overview and management">
+      {/* Stats */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 28 }} className="animate-stagger">
+        <StatCard label="Total Medicines" value={medicines.length} icon={<IconPill size={20} color="#16a34a" strokeWidth={1.8} />} iconBg="#f0fdf4" trend={8} trendLabel="8% this month" accentColor="#16a34a" />
+        <StatCard label="Registered Users" value={totalUsers} icon={<IconUsers size={20} color="#0284c7" strokeWidth={1.8} />} iconBg="#dbeafe" trend={15} accentColor="#0284c7" />
+        <StatCard label="Pending Approvals" value={pendingUsers} icon={<IconAlertTriangle size={20} color="#b45309" strokeWidth={1.8} />} iconBg="#fef3c7" trendLabel="Needs review" accentColor="#f59e0b" />
+        <StatCard label="Platform Revenue (ETB)" value={`${(totalRevenue / 1000).toFixed(0)}K`} icon={<IconChartBar size={20} color="#7c3aed" strokeWidth={1.8} />} iconBg="#f5f3ff" trend={22} accentColor="#7c3aed" />
       </div>
 
-      <div className="app">
-        <NavbarOne />
-      </div>
-
-      <Grid columns={2}>
-        <Sidebar span={2} />
-        <Card miw={860} mx="auto" p={30} withBorder>
-          <Header px={10} py={10} span={10} category="App" title="Update Inventory" />
-
-          {/* Add Medicine Form */}
-          <Box component="form" onSubmit={handleAddMedicine} sx={{ mb: 4 }}>
-            <h3 className="text-lg font-bold mb-4 text-gray-800">Add New Medicine</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <TextField
-                label="Medicine Title *"
-                variant="outlined"
-                size="small"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-                fullWidth
-              />
-              <TextField
-                label="Price (e.g. 12,000 Tsh) *"
-                variant="outlined"
-                size="small"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                required
-                fullWidth
-              />
-              <TextField
-                label="Pharmacy / Vendor Name"
-                variant="outlined"
-                size="small"
-                value={pharmacyName}
-                onChange={(e) => setPharmacyName(e.target.value)}
-                fullWidth
-              />
-              <TextField
-                label="Location / City"
-                variant="outlined"
-                size="small"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                fullWidth
-              />
-              <TextField
-                label="Packaging Unit (e.g. 10 Tablets)"
-                variant="outlined"
-                size="small"
-                value={unit}
-                onChange={(e) => setUnit(e.target.value)}
-                fullWidth
-              />
-              <TextField
-                label="Image URL"
-                variant="outlined"
-                size="small"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                fullWidth
-              />
+      {/* Quick nav cards */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 28 }}>
+        {[
+          { label: "User Management", icon: IconUsers, path: "/admin/users", count: totalUsers, color: "#0284c7", bg: "#eff6ff" },
+          { label: "Vendor Management", icon: IconBuildingStore, path: "/admin/vendors", count: `${pendingUsers} pending`, color: "#b45309", bg: "#fef3c7" },
+          { label: "Reports & Analytics", icon: IconChartBar, path: "/admin/reports", count: "View insights", color: "#7c3aed", bg: "#f5f3ff" },
+          { label: "System Settings", icon: IconAlertTriangle, path: "/admin/settings", count: "Configure", color: "#16a34a", bg: "#f0fdf4" },
+        ].map((card) => {
+          const Icon = card.icon;
+          return (
+            <div
+              key={card.label}
+              className="card"
+              style={{ cursor: "pointer", transition: "all 0.2s", background: card.bg, borderColor: card.bg }}
+              onClick={() => navigate(card.path)}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "none"; }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <Icon size={22} color={card.color} strokeWidth={1.8} />
+                <IconChevronRight size={14} color={card.color} />
+              </div>
+              <div style={{ fontWeight: 700, fontSize: "0.88rem", color: "var(--text-primary)", marginTop: 14 }}>{card.label}</div>
+              <div style={{ fontSize: "0.75rem", color: card.color, fontWeight: 600, marginTop: 4 }}>{card.count}</div>
             </div>
-            <TextField
-              label="Description"
-              variant="outlined"
-              size="small"
-              multiline
-              rows={2}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              fullWidth
-              sx={{ mb: 3 }}
-            />
-            <Button type="submit" color="green" radius="md">
-              Load Medicine to Inventory
-            </Button>
-          </Box>
+          );
+        })}
+      </div>
 
-          <hr className="my-6 border-gray-200" />
-
-          {/* Medicines Inventory Table */}
-          <h3 className="text-lg font-bold mb-4 text-gray-800">
-            Current Loaded Medicines ({medicines.length})
-          </h3>
-          <div style={{ overflowX: "auto" }}>
-            <Table horizontalSpacing="md" verticalSpacing="xs" fontSize="sm" highlightOnHover>
-              <thead>
-                <tr>
-                  <th>Title</th>
-                  <th>Location / Vendor</th>
-                  <th>Price</th>
-                  <th>Stock</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {medicines.map((med) => (
-                  <tr key={med._id}>
-                    <td style={{ fontWeight: 600 }}>{med.Title}</td>
-                    <td>{med.City}</td>
-                    <td>{med.Price || "3,000 Tsh"}</td>
-                    <td>
-                      <Badge color={med.InStock ? "green" : "red"} variant="light">
-                        {med.InStock ? "In Stock" : "Out of Stock"}
-                      </Badge>
-                    </td>
-                    <td>
-                      <Button
-                        variant="outline"
-                        color="red"
-                        size="xs"
-                        onClick={() => handleDelete(med._id)}
-                      >
-                        Delete
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
+      {/* Inline Add Form */}
+      {showAddForm && (
+        <form onSubmit={handleAdd} style={{ padding: "20px", borderRadius: "var(--radius-md)", marginBottom: 20, background: "#f0fdf4", border: "1px solid #bbf7d0" }}>
+          <div style={{ fontWeight: 700, fontSize: "0.85rem", marginBottom: 14, color: "var(--primary-dark)" }}>→ Add New Medicine</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 12 }}>
+            {[
+              { label: "Medicine Name *", field: "title", placeholder: "Amoxicillin 500mg (10s)" },
+              { label: "Price (ETB) *", field: "price", placeholder: "420" },
+              { label: "Packaging Unit *", field: "unit", placeholder: "10 Capsules in Strip" },
+              { label: "City", field: "city", placeholder: "Addis Ababa" },
+              { label: "Vendor / Pharmacy", field: "pharmacyName", placeholder: "PFSA Central Store" },
+              { label: "Category", field: "category", placeholder: "Antibiotics" },
+            ].map(({ label, field, placeholder }) => (
+              <div key={field}>
+                <label className="form-label">{label}</label>
+                <input
+                  className="form-input"
+                  placeholder={placeholder}
+                  value={(form as Record<string, string>)[field]}
+                  onChange={(e) => setForm((p) => ({ ...p, [field]: e.target.value }))}
+                  required={label.includes("*")}
+                />
+              </div>
+            ))}
           </div>
-        </Card>
-      </Grid>
-    </div>
+          <div style={{ marginBottom: 12 }}>
+            <label className="form-label">Description</label>
+            <textarea className="form-input" style={{ minHeight: 60, resize: "vertical" }} placeholder="Brief product description…" value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} />
+          </div>
+          <button type="submit" className="btn-primary" style={{ fontSize: "0.85rem" }}>
+            <IconPlus size={14} /> Add to Inventory
+          </button>
+        </form>
+      )}
+
+      {/* Inventory Table */}
+      <DataTable<Medicine>
+        columns={columns}
+        data={medicines}
+        searchPlaceholder="Search medicine name or vendor…"
+        searchFields={["Title", "PharmacyName", "City", "Category"]}
+        filters={filters}
+        pageSize={10}
+        pageSizeOptions={[10, 20, 50]}
+        headerAction={
+          <button className="btn-primary" style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.82rem" }} onClick={() => setShowAddForm(!showAddForm)}>
+            <IconPlus size={15} /> {showAddForm ? "Cancel Form" : "Add Medicine"}
+          </button>
+        }
+      />
+    </DashboardLayout>
   );
 };
 
