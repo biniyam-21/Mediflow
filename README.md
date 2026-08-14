@@ -1,55 +1,55 @@
-# 🏥 MediFlow — Digital Pharmacy & Medical Supply Chain Platform
+# MediFlow — Digital Pharmacy & Medical Supply Chain Platform
 
-> **EFMHACA & MoH Regulated B2B Pharmaceutical Logistics System**  
-> Connecting Ethiopian Hospitals, Health Centers, and Retail Pharmacies with Accredited Pharmaceutical Importers & Distributors.
-
----
-
-## 📌 Executive Summary
-
-**MediFlow** is a comprehensive, enterprise-grade B2B digital supply chain platform engineered specifically for the Ethiopian healthcare sector. It streamlines the end-to-end procurement of WHO Essential Medicines, IV Fluids, Vaccines, and Medical Equipment while strictly adhering to **Ethiopian Food and Drug Authority (EFMHACA)** Good Distribution Practice (GDP) standards.
+> EFMHACA & MoH Regulated B2B Pharmaceutical Logistics System  
+> Connecting Hospitals, Health Centers, and Retail Pharmacies with Accredited Pharmaceutical Importers & Distributors.
 
 ---
 
-## ✨ Key Platform Features
+## Executive Summary
 
-### 🏥 1. Hospital Pharmacist Portal
-- **Essential Medicines Catalog:** Instant multi-parameter search across categories, cities, and licensed vendors.
-- **🛒 Centered Quick Cart Modal:** Interactive modal with quantity controls (`+` / `-`), WHO essential drug promo discounts, and cold-chain indicators.
-- **💳 Multi-Channel Ethiopian Payments:** Seamless integration for **Telebirr**, **CBE Birr**, **Chapa**, and **LC Vouchers**.
-- **❤️ Fast Reorder & Favorites:** 1-click bulk reorder functionality for high-demand emergency pharmaceuticals.
-- **⭐ Hospital Ratings & Reviews:** Verified reviews and star ratings from hospital procurement officers.
-
-### 🏭 2. Pharmaceutical Vendor & Depot Manager Portal
-- **📊 Sales & Revenue Analytics Dashboard (`/vendor/analytics`):** Real-time monthly revenue trends, top-selling drugs ranking, top purchasing hospital clients, and sales volume metrics.
-- **🏷️ Bulk Price & Discount Updater:** Apply promotional discounts (5%, 10%, 15%, 20% OFF) or update catalog pricing in 1 click.
-- **📦 Warehouse Driver Packing Slip (`PackingSlipModal`):** Printable loading sheets with box counts, batch numbers, carrier driver details, and signature sign-off blocks.
-- **⚡ Quick Stock Qty Adjuster:** In-table stock inventory updates with instant feedback.
-
-### ❄️ 3. Cold-Chain & FEFO Expiry Management
-- **❄️ IoT Temperature Monitoring (2°C – 8°C):** Real-time cold-chain sensor logging for insulin, vaccines, and biologics with breach alerts.
-- **⏳ FEFO Batch Expiry Tracker (`/expiry-tracker`):** Color-coded urgency levels:
-  - 🔴 **Critical (< 30 Days):** Automated liquidation discount trigger
-  - 🟡 **Warning (30 – 90 Days):** Priority dispatch alert
-  - 🟢 **Safe Stock (> 90 Days):** Standard FEFO dispatch
-- **📜 Timestamped Audit Log:** Complete event trail on orders (*Digital Signatures*, *Payment Verification*, *Depot Allocation*, *Cold-Chain Transit*).
-
-### 📄 4. Regulatory Compliance & Invoicing
-- **የሕክምና መድኃኒት መሸኛና የግብር ደረሰኝ (FMHACA Delivery Waybill):** Printable standard delivery waybills with TIN, EFMHACA accreditation numbers, and VAT exemption notes (0% VAT for WHO essential drugs).
-- **🔑 3-Step Password Recovery (`/forgot-password`):** Secure 6-digit OTP verification flow for hospital accounts.
+MediFlow is a B2B digital supply chain platform engineered specifically for the healthcare sector. It streamlines the end-to-end procurement of WHO Essential Medicines, IV Fluids, Vaccines, and Medical Equipment while adhering to Ethiopian Food and Drug Authority (EFMHACA) Good Distribution Practice (GDP) standards.
 
 ---
 
-## 🛠️ Technology Stack
+## Key Platform Features
+
+### 1. Hospital Pharmacist Portal
+- **Essential Medicines Catalog:** Search across categories, cities, and licensed vendors.
+- **Quick Cart Modal:** Interactive centered modal with quantity controls, essential drug promo discounts, and cold-chain indicators.
+- **Multi-Channel Payments:** Integration for Telebirr, CBE Birr, Chapa, and LC Vouchers.
+- **Fast Reorder & Favorites:** Bulk reorder functionality for high-demand emergency pharmaceuticals.
+- **Hospital Ratings & Reviews:** Verified reviews and ratings from hospital procurement officers.
+
+### 2. Pharmaceutical Vendor & Depot Manager Portal
+- **Sales & Revenue Analytics Dashboard (`/vendor/analytics`):** Real-time monthly revenue trends, top-selling drugs ranking, top purchasing hospital clients, and sales volume metrics.
+- **Bulk Price & Discount Updater:** Apply promotional discounts (5%, 10%, 15%, 20% OFF) or update catalog pricing in one click.
+- **Warehouse Driver Packing Slip (`PackingSlipModal`):** Printable loading sheets with box counts, batch numbers, carrier driver details, and signature sign-off blocks.
+- **Quick Stock Qty Adjuster:** In-table stock inventory updates with instant feedback.
+
+### 3. Cold-Chain & FEFO Expiry Management
+- **IoT Temperature Monitoring (2°C – 8°C):** Real-time cold-chain sensor logging for insulin, vaccines, and biologics with breach alerts.
+- **FEFO Batch Expiry Tracker (`/expiry-tracker`):** Color-coded urgency levels:
+  - **Critical (< 30 Days):** Automated liquidation discount trigger
+  - **Warning (30 – 90 Days):** Priority dispatch alert
+  - **Safe Stock (> 90 Days):** Standard FEFO dispatch
+- **Timestamped Audit Log:** Complete event trail on orders (Digital Signatures, Payment Verification, Depot Allocation, Cold-Chain Transit).
+
+### 4. Regulatory Compliance & Invoicing
+- **FMHACA Delivery Waybill & Tax Invoice:** Printable standard delivery waybills with TIN, EFMHACA accreditation numbers, and VAT exemption notes (0% VAT for WHO essential drugs).
+- **3-Step Password Recovery (`/forgot-password`):** Secure 6-digit OTP verification flow for hospital accounts.
+
+---
+
+## Technology Stack
 
 - **Frontend Core:** React 18 (TypeScript), Vite 4
-- **UI & Styling:** Custom CSS Tokens, Modern Glassmorphism, Tabler Icons (`@tabler/icons-react`), Material UI (`@mui/material`), TailwindCSS
+- **UI & Styling:** Custom CSS Tokens, Tabler Icons (`@tabler/icons-react`), Material UI (`@mui/material`), TailwindCSS
 - **State & Notification:** React Context (`CartContext`, `ToastContext`), Custom LocalStorage Persistence
 - **Visualization & Export:** Recharts, Custom CSV Exporter (`exportUtils`)
 
 ---
 
-## 📂 Project Architecture
+## Project Architecture
 
 ```
 Client/
@@ -85,7 +85,7 @@ Client/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - **Node.js**: `v18.0.0` or higher
@@ -117,9 +117,9 @@ Client/
 
 ---
 
-## 👤 User Roles for Demo Testing
+## User Roles for Demo Testing
 
-You can simulate different user permissions via the platform login page (`/login`):
+Simulate different user permissions via the platform login page (`/login`):
 
 | Role | Default Access Route | Key Capabilities |
 | :--- | :--- | :--- |
@@ -129,6 +129,6 @@ You can simulate different user permissions via the platform login page (`/login
 
 ---
 
-## 📜 License & Compliance
+## License & Compliance
 
-Developed for the **Ministry of Health (MoH)** & **EFMHACA** digital pharmaceutical supply chain initiative. All rights reserved.
+Developed for the Ministry of Health (MoH) & EFMHACA digital pharmaceutical supply chain initiative. All rights reserved.
